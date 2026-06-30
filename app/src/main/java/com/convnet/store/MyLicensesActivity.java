@@ -6,13 +6,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 我的许可证 — 显示用户持有的 NFT 激活码
+ * 我的许可证 — 显示用户持有的 NFT 激活码 + 对应 APP 信息
  */
 public class MyLicensesActivity extends AppCompatActivity {
 
@@ -73,7 +70,7 @@ public class MyLicensesActivity extends AppCompatActivity {
 
     private void addLicenseCard(long tokenId) {
         TextView card = new TextView(this);
-        card.setText("🎫 NFT #" + tokenId + "\nToken ID: " + Long.toHexString(tokenId).toUpperCase());
+        card.setText("🎫 NFT #" + tokenId + "\nToken ID: " + Long.toHexString(tokenId).toUpperCase() + "\n加载APP信息...");
         card.setPadding(32, 32, 32, 32);
         card.setBackgroundResource(R.drawable.card_bg);
 
@@ -85,8 +82,26 @@ public class MyLicensesActivity extends AppCompatActivity {
 
         licenseContainer.addView(card);
 
-        // 查询该 NFT 对应的 APP 信息
-        // TODO: 调用 LicenseNFT.licenses(tokenId) 获取 appId
+        // 查询该 NFT 对应的 appId，再查询 APP 详情
+        web3.getLicenseAppId(tokenId).thenCompose(appId -> {
+            if (appId < 0) {
+                return java.util.concurrent.CompletableFuture.completedFuture(null);
+            }
+            return web3.getApp(appId);
+        }).thenAccept(appInfo -> {
+            runOnUiThread(() -> {
+                if (appInfo != null) {
+                    card.setText("🎫 NFT #" + tokenId
+                            + "\nAPP: " + appInfo.getLocalName()
+                            + "\n包名: " + appInfo.packageName
+                            + "\n状态: ✅ 已激活");
+                } else {
+                    card.setText("🎫 NFT #" + tokenId
+                            + "\nToken ID: " + Long.toHexString(tokenId).toUpperCase()
+                            + "\n状态: ✅ 已激活");
+                }
+            });
+        });
     }
 
     @Override

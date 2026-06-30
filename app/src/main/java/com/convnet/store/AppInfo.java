@@ -27,12 +27,15 @@ public class AppInfo {
         return String.format("%d.%06d", val / 1000000, val % 1000000).replaceAll("0+$", "").replaceAll("\\.$", ".0");
     }
 
-    /** 简单格式化价格 */
+    /** 简单格式化价格 — 使用 BigDecimal 避免科学计数法 */
     public String getPriceDisplay() {
         if (price == null) return "0 USDC";
-        double val = price.doubleValue() / 1000000.0;
-        if (val == (long) val) return (long) val + " USDC";
-        return val + " USDC";
+        java.math.BigDecimal bd = new java.math.BigDecimal(price)
+                .divide(new java.math.BigDecimal("1000000"))
+                .stripTrailingZeros();
+        String str = bd.toPlainString();
+        if (str.equals("0")) str = "0";
+        return str + " USDC";
     }
 
     /** 获取中文名 */

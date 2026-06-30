@@ -57,39 +57,32 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
     }
 
     private void initViews() {
-        // Stats
         statApps = findViewById(R.id.stat_apps);
         statDevs = findViewById(R.id.stat_devs);
         statLicenses = findViewById(R.id.stat_licenses);
 
-        // Wallet
         walletBar = findViewById(R.id.wallet_bar);
         walletAddress = findViewById(R.id.wallet_address);
         walletBalance = findViewById(R.id.wallet_balance);
         walletRole = findViewById(R.id.wallet_role);
         btnImportWallet = findViewById(R.id.btn_import_wallet);
 
-        // Refresh
         refresh = findViewById(R.id.refresh_layout);
         refresh.setOnRefreshListener(this::loadData);
 
-        // RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recycler_apps);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         adapter = new AppAdapter(this);
         recyclerView.setAdapter(adapter);
 
-        // Empty state
         emptyText = findViewById(R.id.empty_text);
 
-        // Tabs
         tabApps = findViewById(R.id.tab_apps);
         tabLicenses = findViewById(R.id.tab_licenses);
         tabPromoter = findViewById(R.id.tab_promoter);
         promoterPanel = findViewById(R.id.promoter_panel);
         recyclerApps = findViewById(R.id.refresh_layout);
 
-        // Promoter views
         promoterRegisterCard = findViewById(R.id.promoter_register_card);
         promoterStatusCard = findViewById(R.id.promoter_status_card);
         promoterEarningsCard = findViewById(R.id.promoter_earnings_card);
@@ -103,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
         promoterTotalSales = findViewById(R.id.promoter_total_sales);
         promoterTotalEarnings = findViewById(R.id.promoter_total_earnings);
 
-        // Wallet click → go to licenses
         walletBar.setOnClickListener(v -> {
             if (WalletManager.getInstance(this).hasWallet()) {
                 startActivity(new Intent(this, MyLicensesActivity.class));
@@ -112,13 +104,8 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
             }
         });
 
-        // Import wallet button
         btnImportWallet.setOnClickListener(v -> openWalletActivity());
-
-        // Promoter register
         btnRegisterPromoter.setOnClickListener(v -> registerPromoter());
-
-        // Copy link
         btnCopyLink.setOnClickListener(v -> copyPromoterLink());
     }
 
@@ -135,12 +122,10 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
     private void switchTab(String tab) {
         currentTab = tab;
 
-        // Reset tab styles
         tabApps.setTextColor(getColor(R.color.text3));
         tabLicenses.setTextColor(getColor(R.color.text3));
         tabPromoter.setTextColor(getColor(R.color.text3));
 
-        // Hide all panels
         refresh.setVisibility(View.GONE);
         promoterPanel.setVisibility(View.GONE);
 
@@ -170,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
         refresh.setRefreshing(true);
         emptyText.setVisibility(View.GONE);
 
-        // Stats
         web3.getAppCount().thenAccept(count ->
             runOnUiThread(() -> statApps.setText(String.valueOf(count))));
 
@@ -180,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
         web3.getLicenseCount().thenAccept(count ->
             runOnUiThread(() -> statLicenses.setText(String.valueOf(count))));
 
-        // App list
         web3.getAllApps().thenAccept(apps -> {
             runOnUiThread(() -> {
                 refresh.setRefreshing(false);
@@ -211,26 +194,24 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
             walletAddress.setText(addr.substring(0, 6) + "..." + addr.substring(addr.length() - 4));
             btnImportWallet.setText("切换钱包");
 
-            // Check if registered as developer or promoter
-            web3.isRegisteredDeveloper(addr).thenAccept(isDev -> {
-                runOnUiThread(() -> {
-                    if (isDev) {
-                        walletRole.setVisibility(View.VISIBLE);
-                        walletRole.setText("👨‍💻 开发者");
-                    }
+            // 使用 thenCombine 避免异步拼接竞争
+            web3.isRegisteredDeveloper(addr).thenCombine(
+                web3.isRegisteredPromoter(addr),
+                (isDev, isPromo) -> {
+                    StringBuilder sb = new StringBuilder();
+                    if (isDev) sb.append("\uD83D\uDC68\u200D\uD83D\uDCBB 开发者");
+                    if (isPromo) sb.append(sb.length() > 0 ? " " : "").append("\uD83D\uDCC3 推广者");
+                    runOnUiThread(() -> {
+                        if (sb.length() > 0) {
+                            walletRole.setVisibility(View.VISIBLE);
+                            walletRole.setText(sb.toString());
+                        } else {
+                            walletRole.setVisibility(View.GONE);
+                        }
+                    });
+                    return null;
                 });
-            });
 
-            web3.isRegisteredPromoter(addr).thenAccept(isPromo -> {
-                runOnUiThread(() -> {
-                    if (isPromo) {
-                        walletRole.setVisibility(View.VISIBLE);
-                        walletRole.setText(walletRole.getText() + " 📣 推广者");
-                    }
-                });
-            });
-
-            // Balances
             web3.getUsdcBalance(addr).thenAccept(balance -> {
                 double usdc = balance.doubleValue() / 1000000.0;
                 runOnUiThread(() -> walletBalance.setText(String.format("%.2f USDC", usdc)));
@@ -289,7 +270,6 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
             });
         });
 
-        // TODO: Query actual earnings from chain events
         promoterTotalSales.setText("—");
         promoterTotalEarnings.setText("— USDC");
     }
@@ -310,18 +290,22 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
             return;
         }
 
-        // Build the register transaction
+        // 禁用按钮防止重复提交
+        btnRegisterPromoter.setEnabled(false);
+        btnRegisterPromoter.setText("交易提交中...");
+
         String data = Web3Client.selector("register(string,string)")
                 + Web3Client.encodeString(name)
                 + Web3Client.encodeString(code);
 
-        // Send via WalletManager (signs and sends transaction)
         WalletManager.getInstance(this).sendTransaction(
             ContractConfig.PROMOTER_REGISTRY,
             BigInteger.ZERO,
             data,
             (success, txHash) -> {
                 runOnUiThread(() -> {
+                    btnRegisterPromoter.setEnabled(true);
+                    btnRegisterPromoter.setText("注册推广者");
                     if (success) {
                         Toast.makeText(this, "✅ 注册成功！tx: " + txHash.substring(0, 10) + "...", Toast.LENGTH_LONG).show();
                         checkPromoterStatus();

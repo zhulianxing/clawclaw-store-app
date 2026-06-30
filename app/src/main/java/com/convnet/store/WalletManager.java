@@ -2,6 +2,9 @@ package com.convnet.store;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.util.Base64;
 import android.util.Log;
 import org.bouncycastle.crypto.digests.KeccakDigest;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
@@ -14,10 +17,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import okhttp3.*;
 import java.math.BigInteger;
-import java.security.SecureRandom;
+import java.security.KeyStore;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 
 /**
  * 钱包管理 — 本地私钥签名 + Polygon RPC 广播
+ * 安全: 私钥使用 Android Keystore (AES-256-GCM) 加密存储
  * 支持: 导入私钥、签名交易、查询余额
  */
 public class WalletManager {
@@ -25,7 +33,9 @@ public class WalletManager {
     private static final String TAG = "WalletManager";
     private static final String PREFS_NAME = "convnet_wallet";
     private static final String KEY_ADDRESS = "wallet_address";
-    private static final String KEY_PRIVATE = "wallet_private_key";
+    private static final String KEY_PRIVATE_ENC = "wallet_private_enc";  // 加密后的私钥
+    private static final String KEY_IV = "wallet_iv";                    // GCM IV
+    private static final String KEYSTORE_ALIAS = "daix_wallet_key";
     private static WalletManager instance;
     private final SharedPreferences prefs;
     private final OkHttpClient client;
@@ -65,19 +75,81 @@ public class WalletManager {
         return prefs.getString(KEY_ADDRESS, null);
     }
 
+    /**
+     * 从 Keystore 解密获取私钥
+     */
     public String getPrivateKey() {
-        return prefs.getString(KEY_PRIVATE, null);
+        try {
+            String encBase64 = prefs.getString(KEY_PRIVATE_ENC, null);
+            String ivBase64 = prefs.getString(KEY_IV, null);
+            if (encBase64 == null || ivBase64 == null) return null;
+
+            SecretKey key = getOrCreateSecretKey();
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            GCMParameterSpec spec = new GCMParameterSpec(128, Base64.decode(ivBase64, Base64.DEFAULT));
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+            byte[] decBytes = cipher.doFinal(Base64.decode(encBase64, Base64.DEFAULT));
+            return new String(decBytes, "UTF-8");
+        } catch (Exception e) {
+            Log.e(TAG, "getPrivateKey decrypt error", e);
+            return null;
+        }
     }
 
+    /**
+     * 保存钱包 — 使用 Android Keystore 加密私钥
+     */
     public void saveWallet(String address, String privateKey) {
-        prefs.edit()
-                .putString(KEY_ADDRESS, address)
-                .putString(KEY_PRIVATE, privateKey)
-                .apply();
+        try {
+            SecretKey key = getOrCreateSecretKey();
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] encBytes = cipher.doFinal(privateKey.getBytes("UTF-8"));
+            byte[] iv = cipher.getIV();
+
+            prefs.edit()
+                    .putString(KEY_ADDRESS, address)
+                    .putString(KEY_PRIVATE_ENC, Base64.encodeToString(encBytes, Base64.NO_WRAP))
+                    .putString(KEY_IV, Base64.encodeToString(iv, Base64.NO_WRAP))
+                    .apply();
+        } catch (Exception e) {
+            Log.e(TAG, "saveWallet encrypt error", e);
+            throw new RuntimeException("钱包加密失败，无法保存");
+        }
     }
 
     public void clearWallet() {
         prefs.edit().clear().apply();
+        try {
+            KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
+            ks.load(null);
+            if (ks.containsAlias(KEYSTORE_ALIAS)) {
+                ks.deleteEntry(KEYSTORE_ALIAS);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "clearWallet keystore error", e);
+        }
+    }
+
+    /**
+     * 获取或创建 Android Keystore 中的 AES 密钥
+     */
+    private SecretKey getOrCreateSecretKey() throws Exception {
+        KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
+        ks.load(null);
+        if (ks.containsAlias(KEYSTORE_ALIAS)) {
+            return (SecretKey) ks.getKey(KEYSTORE_ALIAS, null);
+        }
+        KeyGenerator kg = KeyGenerator.getInstance(
+                KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+        kg.init(new KeyGenParameterSpec.Builder(
+                KEYSTORE_ALIAS,
+                KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .build());
+        return kg.generateKey();
     }
 
     /**
@@ -140,21 +212,35 @@ public class WalletManager {
                 String gasPriceHex = rpcCall("eth_gasPrice", new JSONArray());
                 BigInteger gasPrice = new BigInteger(gasPriceHex.substring(2), 16);
 
-                // 3. Estimate gas (simplified: use 200000 for contract calls)
-                BigInteger gasLimit = BigInteger.valueOf(300000);
-
-                // 4. Build raw transaction
+                // 3. Estimate gas via eth_estimateGas
                 String toAddr = to.startsWith("0x") ? to.substring(2) : to;
                 String dataHex = data.startsWith("0x") ? data.substring(2) : data;
+                BigInteger gasLimit;
+                try {
+                    JSONObject estObj = new JSONObject();
+                    estObj.put("from", from);
+                    estObj.put("to", "0x" + toAddr);
+                    estObj.put("data", "0x" + dataHex);
+                    estObj.put("value", "0x" + value.toString(16));
+                    JSONArray estParams = new JSONArray().put(estObj).put("latest");
+                    String gasHex = rpcCall("eth_estimateGas", estParams);
+                    gasLimit = new BigInteger(gasHex.substring(2), 16);
+                    // 加 20% 安全余量
+                    gasLimit = gasLimit.multiply(BigInteger.valueOf(120)).divide(BigInteger.valueOf(100));
+                } catch (Exception estEx) {
+                    Log.w(TAG, "eth_estimateGas failed, fallback to 350000", estEx);
+                    gasLimit = BigInteger.valueOf(350000);
+                }
 
-                // RLP encode
+                // 4. Build unsigned raw transaction
                 byte[] rawTx = encodeRawTransaction(
                     nonce, gasPrice, gasLimit, toAddr, value, dataHex,
                     BigInteger.valueOf(ContractConfig.CHAIN_ID)
                 );
 
-                // 5. Sign
-                byte[] signedTx = signTransaction(rawTx, privKey);
+                // 5. Sign — 传入原始参数，不再依赖 RLP decode
+                byte[] signedTx = signTransaction(rawTx, privKey,
+                    nonce, gasPrice, gasLimit, toAddr, value, dataHex);
 
                 // 6. Broadcast
                 String txHex = "0x" + bytesToHex(signedTx);
@@ -192,13 +278,18 @@ public class WalletManager {
         return rlpEncodeList(elements);
     }
 
-    private byte[] signTransaction(byte[] rawTx, String privateKeyHex) throws Exception {
+    /**
+     * 签名交易 — 直接用原始参数重建签名后的交易，不做 RLP decode
+     */
+    private byte[] signTransaction(byte[] unsignedRawTx, String privateKeyHex,
+            BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit,
+            String to, BigInteger value, String dataHex) throws Exception {
         if (privateKeyHex.startsWith("0x")) privateKeyHex = privateKeyHex.substring(2);
         BigInteger privKey = new BigInteger(privateKeyHex, 16);
 
-        // Keccak-256 hash
+        // Keccak-256 hash of unsigned tx
         KeccakDigest digest = new KeccakDigest(256);
-        digest.update(rawTx, 0, rawTx.length);
+        digest.update(unsignedRawTx, 0, unsignedRawTx.length);
         byte[] hash = new byte[32];
         digest.doFinal(hash, 0);
 
@@ -220,7 +311,6 @@ public class WalletManager {
 
         // Get public key for recovery id
         ECPoint q = g.multiply(privKey).normalize();
-        ECPublicKeyParameters pubParams = new ECPublicKeyParameters(q, domain);
 
         // Recovery id (0 or 1)
         int recId = -1;
@@ -235,23 +325,17 @@ public class WalletManager {
         }
         if (recId == -1) recId = 0;
 
-        // Chain ID recovery
-        int v = recId + 27 + 8 + ContractConfig.CHAIN_ID * 2;
+        // EIP-155: v = chainId * 2 + 35 + recId
+        int v = ContractConfig.CHAIN_ID * 2 + 35 + recId;
 
-        // Build signed transaction: [nonce, gasPrice, gasLimit, to, value, data, v, r, s]
-        // Re-parse original
-        // Simplified: rebuild with signature
+        // 直接用原始参数重建签名后的交易，不做 RLP decode
         byte[][] elements = new byte[9][];
-        // Re-encode from rawTx (parse RLP)
-        Object parsed = rlpDecode(rawTx);
-        @SuppressWarnings("unchecked")
-        java.util.List<byte[]> items = (java.util.List<byte[]>) parsed;
-        elements[0] = items.get(0);
-        elements[1] = items.get(1);
-        elements[2] = items.get(2);
-        elements[3] = items.get(3);
-        elements[4] = items.get(4);
-        elements[5] = items.get(5);
+        elements[0] = toRLP(nonce);
+        elements[1] = toRLP(gasPrice);
+        elements[2] = toRLP(gasLimit);
+        elements[3] = hexToBytes(to);
+        elements[4] = toRLP(value);
+        elements[5] = hexToBytes(dataHex);
         elements[6] = toRLP(BigInteger.valueOf(v));
         elements[7] = toRLP(r);
         elements[8] = toRLP(s);
@@ -267,8 +351,8 @@ public class WalletManager {
             if (recId >= 2) x = x.add(n);
             if (x.compareTo(P) >= 0) return null;
 
-            // Use curve.createPoint + manual decompression
-            ECPoint R = curve.createPoint(x, computeY(x, curve, recId % 2 == 1)).normalize();
+            // recId: 0 = even y, 1 = odd y
+            ECPoint R = curve.createPoint(x, computeY(x, curve, recId == 1)).normalize();
 
             BigInteger e = new BigInteger(1, hash);
             BigInteger rInv = r.modInverse(n);
@@ -370,68 +454,6 @@ public class WalletManager {
         return result;
     }
 
-    private Object rlpDecode(byte[] data) {
-        int[] pos = {0};
-        return rlpDecodeItem(data, pos);
-    }
-
-    private Object rlpDecodeItem(byte[] data, int[] pos) {
-        if (pos[0] >= data.length) return null;
-        byte prefix = data[pos[0]];
-        if ((prefix & 0xFF) < 0x80) {
-            byte[] result = new byte[]{data[pos[0]]};
-            pos[0]++;
-            return result;
-        } else if ((prefix & 0xFF) < 0xb8) {
-            int len = (prefix & 0xFF) - 0x80;
-            byte[] result = new byte[len];
-            System.arraycopy(data, pos[0] + 1, result, 0, len);
-            pos[0] += 1 + len;
-            return result;
-        } else if ((prefix & 0xFF) < 0xc0) {
-            int lenOfLen = (prefix & 0xFF) - 0xb7;
-            int len = parseLength(data, pos[0] + 1, lenOfLen);
-            byte[] result = new byte[len];
-            System.arraycopy(data, pos[0] + 1 + lenOfLen, result, 0, len);
-            pos[0] += 1 + lenOfLen + len;
-            return result;
-        } else if ((prefix & 0xFF) < 0xf8) {
-            int len = (prefix & 0xFF) - 0xc0;
-            int startPos = pos[0] + 1;
-            int endPos = startPos + len;
-            java.util.List<byte[]> list = new java.util.ArrayList<>();
-            while (pos[0] < endPos) {
-                Object item = rlpDecodeItem(data, pos);
-                if (item instanceof byte[]) {
-                    list.add((byte[]) item);
-                }
-            }
-            return list;
-        } else {
-            int lenOfLen = (prefix & 0xFF) - 0xf7;
-            int len = parseLength(data, pos[0] + 1, lenOfLen);
-            int startPos = pos[0] + 1 + lenOfLen;
-            int endPos = startPos + len;
-            java.util.List<byte[]> list = new java.util.ArrayList<>();
-            pos[0] = startPos;
-            while (pos[0] < endPos) {
-                Object item = rlpDecodeItem(data, pos);
-                if (item instanceof byte[]) {
-                    list.add((byte[]) item);
-                }
-            }
-            return list;
-        }
-    }
-
-    private int parseLength(byte[] data, int pos, int len) {
-        int result = 0;
-        for (int i = 0; i < len; i++) {
-            result = (result << 8) | (data[pos + i] & 0xFF);
-        }
-        return result;
-    }
-
     private static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
@@ -453,13 +475,23 @@ public class WalletManager {
                 MediaType.parse("application/json"));
         Request request = new Request.Builder().url(ContractConfig.RPC_URL).post(body).build();
 
-        try (Response response = client.newCall(request).execute()) {
-            String respStr = response.body().string();
-            JSONObject resp = new JSONObject(respStr);
-            if (resp.has("error")) {
-                throw new Exception("RPC error: " + resp.get("error"));
+        // 3 次重试 + 指数退避
+        Exception lastError = null;
+        for (int attempt = 0; attempt < 3; attempt++) {
+            try (Response response = client.newCall(request).execute()) {
+                String respStr = response.body().string();
+                JSONObject resp = new JSONObject(respStr);
+                if (resp.has("error")) {
+                    throw new Exception("RPC error: " + resp.get("error"));
+                }
+                return resp.getString("result");
+            } catch (Exception e) {
+                lastError = e;
+                if (attempt < 2) {
+                    Thread.sleep(1000L * (attempt + 1));
+                }
             }
-            return resp.getString("result");
         }
+        throw lastError;
     }
 }

@@ -21,7 +21,7 @@ public class ContractConfig {
     public static final String USDC = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359";
 
     // 平台 APK 下载基地址
-    public static final String APK_BASE_URL = "https://clawclaw.tech/apk";
+    public static final String APK_BASE_URL = "https://daix.fun/apk";
 
     // APP 图标 emoji 映射
     public static String getIconForPackage(String pkg) {

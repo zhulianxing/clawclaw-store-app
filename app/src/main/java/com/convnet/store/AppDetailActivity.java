@@ -128,18 +128,72 @@ public class AppDetailActivity extends AppCompatActivity {
                 .show();
     }
 
-    /** 执行链上购买 */
+    /** 执行链上购买 — USDC approve + mintLicense 两步交易 */
     private void doPurchase() {
-        // TODO: 实现链上交易签名
-        // 1. USDC approve(LicenseNFT, price)
-        // 2. LicenseNFT.mintLicense(appId, address(0))
-        // 需要用户私钥签名
-        Toast.makeText(this, "链上购买功能开发中...\n请使用 daix.fun 网页版购买", Toast.LENGTH_LONG).show();
+        if (appInfo == null) return;
+        WalletManager wm = WalletManager.getInstance(this);
+        if (!wm.hasWallet()) {
+            Toast.makeText(this, "请先导入钱包", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, WalletActivity.class));
+            return;
+        }
 
-        // 暂时引导到网页版
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://daix.fun"));
-        startActivity(browserIntent);
+        btnPurchase.setEnabled(false);
+        btnPurchase.setText("授权 USDC...");
+
+        String from = wm.getAddress();
+
+        // Step 1: USDC approve(LicenseNFT, price)
+        String approveData = Web3Client.selector("approve(address,uint256)")
+                + Web3Client.encodeAddress(ContractConfig.LICENSE_NFT)
+                + Web3Client.encodeUint(appInfo.price.longValue());
+
+        wm.sendTransaction(ContractConfig.USDC, BigInteger.ZERO, approveData,
+            (success1, result1) -> {
+                if (!success1) {
+                    runOnUiThread(() -> {
+                        btnPurchase.setEnabled(true);
+                        btnPurchase.setText("购买数字凭证");
+                        Toast.makeText(this, "❌ 授权失败: " + result1, Toast.LENGTH_LONG).show();
+                    });
+                    return;
+                }
+
+                runOnUiThread(() -> btnPurchase.setText("等待确认..."));
+
+                // 等待 approve 交易确认（Polygon ~2s）
+                new Thread(() -> {
+                    try { Thread.sleep(5000); } catch (InterruptedException ignored) {}
+
+                    runOnUiThread(() -> btnPurchase.setText("铸造 NFT..."));
+
+                    // Step 2: LicenseNFT.mintLicense(appId, promoterAddress)
+                    // promoterAddress = address(0) 表示无推广者
+                    String mintData = Web3Client.selector("mintLicense(uint256,address)")
+                            + Web3Client.encodeUint(appInfo.appId)
+                            + Web3Client.encodeAddress("0x0000000000000000000000000000000000000000");
+
+                    wm.sendTransaction(ContractConfig.LICENSE_NFT, BigInteger.ZERO, mintData,
+                        (success2, result2) -> {
+                            runOnUiThread(() -> {
+                                btnPurchase.setEnabled(true);
+                                btnPurchase.setText("购买数字凭证");
+                                if (success2) {
+                                    new AlertDialog.Builder(this)
+                                            .setTitle("🎉 购买成功")
+                                            .setMessage("NFT 凭证已铸造！\n交易哈希: " + result2.substring(0, Math.min(20, result2.length())) + "...")
+                                            .setPositiveButton("查看我的凭证", (d, w) -> {
+                                                startActivity(new Intent(this, MyLicensesActivity.class));
+                                            })
+                                            .setNegativeButton("关闭", null)
+                                            .show();
+                                } else {
+                                    Toast.makeText(this, "❌ 铸造失败: " + result2, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        });
+                }).start();
+            });
     }
 
     /** 下载 APK */

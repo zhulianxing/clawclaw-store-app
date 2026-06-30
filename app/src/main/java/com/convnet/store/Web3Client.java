@@ -5,11 +5,12 @@ import org.json.JSONObject;
 
 import okhttp3.*;
 
-import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Web3 RPC 客户端 — 直接调用 Polygon JSON-RPC，不依赖 ethers 库
@@ -22,12 +23,18 @@ public class Web3Client {
     private final String rpcUrl;
     private int nextId = 1;
 
+    private static OkHttpClient sharedClient;
+
     public Web3Client(String rpcUrl) {
         this.rpcUrl = rpcUrl;
-        this.client = new OkHttpClient.Builder()
-                .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                .build();
+        if (sharedClient == null) {
+            sharedClient = new OkHttpClient.Builder()
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .retryOnConnectionFailure(true)
+                    .build();
+        }
+        this.client = sharedClient;
     }
 
     // ===== RPC 调用 =====
@@ -117,28 +124,23 @@ public class Web3Client {
         return new BigInteger(hex, 16);
     }
 
-    /** 解码 string 返回值 (ABI 编码) */
+    /** 解码 string 返回值 (ABI 编码) — 修正版 */
     public static String decodeString(String hex) {
         if (hex.startsWith("0x")) hex = hex.substring(2);
         if (hex.length() < 128) return "";
-        // offset (32 bytes) + length (32 bytes) + data
+        // offset 指向数据区域（从返回值开头算起，单位 bytes）
         int offset = Integer.parseInt(hex.substring(0, 64), 16);
-        int len = Integer.parseInt(hex.substring(64, 128), 16);
+        int pos = offset * 2;
+        if (pos + 64 > hex.length()) return "";
+        int len = Integer.parseInt(hex.substring(pos, pos + 64), 16);
         if (len == 0) return "";
-        int dataStart = offset * 2 + 64; // offset in bytes * 2 + 64 hex chars for offset+length
-        // Actually offset is from start of return data
-        dataStart = (offset + 32) * 2; // skip offset itself, then length is at offset position
-        // Simpler: data starts at position (offset+32)*2, but length is at offset*2
-        String lengthHexStr = hex.substring(offset * 2, offset * 2 + 64);
-        int strLen = Integer.parseInt(lengthHexStr, 16);
-        int strStart = (offset + 32) * 2;
-        if (strStart + strLen * 2 > hex.length()) strLen = (hex.length() - strStart) / 2;
-        StringBuilder sb = new StringBuilder();
+        int strStart = pos + 64; // 跳过 offset 位置后的 length 字段
+        int strLen = Math.min(len, (hex.length() - strStart) / 2);
+        byte[] bytes = new byte[strLen];
         for (int i = 0; i < strLen; i++) {
-            int c = Integer.parseInt(hex.substring(strStart + i * 2, strStart + i * 2 + 2), 16);
-            sb.append((char) c);
+            bytes[i] = (byte) Integer.parseInt(hex.substring(strStart + i * 2, strStart + i * 2 + 2), 16);
         }
-        return sb.toString();
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     /** 解码 bool 返回值 */
@@ -347,6 +349,21 @@ public class Web3Client {
         });
     }
 
+    /** 查询 NFT 凭证详情 — 返回 appId */
+    public CompletableFuture<Long> getLicenseAppId(long tokenId) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String data = selector("licenses(uint256)") + encodeUint(tokenId);
+                String result = ethCall(ContractConfig.LICENSE_NFT, data);
+                // licenses 返回结构: appId(uint256), owner(address), issuedAt(uint256), active(bool)
+                // 取第一个字段 appId
+                return decodeUint(result).longValue();
+            } catch (Exception e) {
+                return -1L;
+            }
+        });
+    }
+
     /** 查询 USDC 授权额度 */
     public CompletableFuture<BigInteger> usdcAllowance(String owner, String spender) {
         return CompletableFuture.supplyAsync(() -> {
@@ -402,7 +419,7 @@ public class Web3Client {
         });
     }
 
-    /** 获取推广者信息 */
+    /** 获取推广者信息 — 修正 ABI 解码 */
     public CompletableFuture<PromoterInfo> getPromoterInfo(String address) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -410,10 +427,14 @@ public class Web3Client {
                 String result = ethCall(ContractConfig.PROMOTER_REGISTRY, data);
                 String hex = result.startsWith("0x") ? result.substring(2) : result;
                 if (hex.length() < 192) return null;
+                // ABI 编码: offset_name(32) + offset_code(32) + active(32) = 96 bytes 头部
+                // 然后是 name 和 code 的动态数据
                 PromoterInfo info = new PromoterInfo();
-                info.name = readStringAt(hex, 0);
-                info.referralCode = readStringAt(hex, 32);
-                info.active = decodeBool(hex.substring(192, 256));
+                int offsetName = decodeUint(hex.substring(0, 64)).intValue();
+                int offsetCode = decodeUint(hex.substring(64, 128)).intValue();
+                info.active = decodeBool(hex.substring(128, 192));
+                info.name = readStringAt(hex, offsetName);
+                info.referralCode = readStringAt(hex, offsetCode);
                 return info;
             } catch (Exception e) {
                 return null;
