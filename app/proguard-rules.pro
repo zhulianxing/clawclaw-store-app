@@ -1,0 +1,2 @@
+-keep class com.convnet.store.** { *; }
+-keep class org.json.** { *; }

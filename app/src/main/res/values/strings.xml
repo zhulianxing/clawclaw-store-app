@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">自由软件世界</string>
+    <string name="app_name_cn">自由软件世界</string>
+
+    <!-- Colors -->
+    <color name="bg">#050507</color>
+    <color name="bg2">#0A0A0F</color>
+    <color name="card">#12121A</color>
+    <color name="border">#222230</color>
+    <color name="text">#F8F8FC</color>
+    <color name="text2">#B0B0C0</color>
+    <color name="text3">#707088</color>
+    <color name="accent">#8B5CF6</color>
+    <color name="accent2">#06B6D4</color>
+    <color name="green">#10B981</color>
+    <color name="red">#F43F5E</color>
+    <color name="gold">#F59E0B</color>
+</resources>

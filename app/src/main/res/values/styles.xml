@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.DaixFun" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">#8B5CF6</item>
+        <item name="colorPrimaryDark">#050507</item>
+        <item name="colorAccent">#06B6D4</item>
+        <item name="android:windowBackground">#050507</item>
+        <item name="android:statusBarColor">#050507</item>
+        <item name="android:navigationBarColor">#050507</item>
+        <item name="android:textColorPrimary">#F8F8FC</item>
+        <item name="android:textColorSecondary">#B0B0C0</item>
+    </style>
+</resources>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#050507">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔑 导入钱包"
+        android:textColor="#F8F8FC"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="导入私钥以在链上购买激活码。私钥仅存储在本设备，不会上传服务器。"
+        android:textColor="#707088"
+        android:textSize="13sp"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前钱包"
+        android:textColor="#B0B0C0"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/wallet_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="未导入钱包"
+        android:textColor="#F8F8FC"
+        android:textSize="15sp"
+        android:background="@drawable/card_bg"
+        android:padding="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="私钥 (64位十六进制)"
+        android:textColor="#B0B0C0"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/edit_private_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="0x..."
+        android:inputType="textPassword"
+        android:textColor="#F8F8FC"
+        android:textColorHint="#404050"
+        android:background="@drawable/edit_bg"
+        android:padding="16dp"
+        android:fontFamily="monospace"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="清除钱包"
+            android:background="@drawable/btn_outline_bg"
+            android:textColor="#F43F5E"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btn_import"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="2"
+            android:text="导入钱包"
+            android:background="@drawable/btn_primary_bg"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚠️ 安全提示\n• 私钥仅存储在本设备\n• 不会上传到任何服务器\n• 清除APP数据会丢失钱包\n• 建议备份私钥到安全位置"
+        android:textColor="#F59E0B"
+        android:textSize="12sp"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/card_bg"
+        android:padding="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💡 提示：也可使用 daix.fun 网页版通过 MetaMask 连接钱包购买"
+        android:textColor="#707088"
+        android:textSize="13sp"
+        android:layout_marginTop="16dp"
+        android:gravity="center" />
+
+</LinearLayout>

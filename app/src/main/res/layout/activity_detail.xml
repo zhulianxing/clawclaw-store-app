@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#050507">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- 顶部图标+名称 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/detail_icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:text="📦"
+                android:textSize="48sp"
+                android:gravity="center"
+                android:background="@drawable/icon_bg"
+                android:layout_marginEnd="20dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/detail_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="APP名称"
+                    android:textColor="#F8F8FC"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/detail_pkg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="com.example.app"
+                    android:textColor="#707088"
+                    android:textSize="13sp"
+                    android:layout_marginTop="4dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/detail_trial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="试用 7 天"
+                        android:textColor="#F59E0B"
+                        android:textSize="12sp"
+                        android:background="@drawable/badge_bg"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="4dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/detail_version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="版本 v1.0.0"
+                        android:textColor="#707088"
+                        android:textSize="12sp"
+                        android:background="@drawable/badge_bg"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="4dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 描述 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="应用介绍"
+            android:textColor="#B0B0C0"
+            android:textSize="14sp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/detail_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="应用描述文本"
+            android:textColor="#F8F8FC"
+            android:textSize="15sp"
+            android:lineSpacingExtra="4dp"
+            android:background="@drawable/card_bg"
+            android:padding="16dp" />
+
+        <!-- 创作者信息 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/card_bg"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="创作者"
+                android:textColor="#707088"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/detail_dev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0x1Bcb...7004"
+                android:textColor="#8B5CF6"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <!-- 价格 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/card_bg"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="永久激活码"
+                android:textColor="#F8F8FC"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detail_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 USDC"
+                android:textColor="#06B6D4"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- 收益分配说明 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/card_bg"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💰 收益分配"
+                android:textColor="#B0B0C0"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="• 创作者: 60%\n• 推广者: 25%\n• 平台: 10%\n• Gas补贴: 5%"
+                android:textColor="#707088"
+                android:textSize="13sp"
+                android:lineSpacingExtra="2dp" />
+
+        </LinearLayout>
+
+        <!-- 进度条 -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100" />
+
+        <!-- 操作按钮 -->
+        <LinearLayout
+            android:id="@+id/purchase_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/btn_download"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="下载试用"
+                android:background="@drawable/btn_outline_bg"
+                android:textColor="#F8F8FC"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btn_purchase"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="2"
+                android:text="购买数字凭证"
+                android:background="@drawable/btn_primary_bg"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
+
+        <!-- 链上信息 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔗 购买后获得 ERC-721 NFT 激活码\n📋 基于 Polygon 区块链\n💎 USDC 支付，即时结算"
+            android:textColor="#707088"
+            android:textSize="12sp"
+            android:lineSpacingExtra="4dp"
+            android:gravity="center" />
+
+    </LinearLayout>
+</ScrollView>
