@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">自由软件世界</string>
-    <string name="app_name_cn">自由软件世界</string>
+    <string name="app_name">DAIX.fun 带饭</string>
+    <string name="app_name_cn">DAIX.fun 带饭</string>
 
     <!-- Colors -->
     <color name="bg">#050507</color>

@@ -15,6 +15,9 @@ public class ContractConfig {
     public static final String DEVELOPER_REGISTRY = "0x8EE775e943C31EA7c4eF2B7bb83e0651c9d04001";
     public static final String APP_REGISTRY = "0xdFCFA7d871cCc3674d873d00192Ba26a685B2b68";
     public static final String LICENSE_NFT = "0x7Ed65226C66b188f66AA0e5483917B1C33a41225";
+    public static final String PROMOTER_REGISTRY = "0xeed4653f341F810e00A73c6ECD454a1205C0Cabb";
+    public static final String LICENSE_QUERY = "0xb36Fd748026097e0F18A644452E739DECf4d0686";
+    public static final String REVENUE_SPLIT = "0x698c00CD9e94353C6ef804e670bc558108250f9D";
     public static final String USDC = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359";
 
     // 平台 APK 下载基地址

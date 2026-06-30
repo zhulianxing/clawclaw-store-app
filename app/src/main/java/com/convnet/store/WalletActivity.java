@@ -1,18 +1,15 @@
 package com.convnet.store;
 
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import java.math.BigInteger;
 
 /**
- * 钱包导入页 — 支持私钥导入
+ * 钱包导入页 — 私钥导入，本地签名
  */
 public class WalletActivity extends AppCompatActivity {
 
@@ -33,7 +30,6 @@ public class WalletActivity extends AppCompatActivity {
         btnClear = findViewById(R.id.btn_clear);
         txtInfo = findViewById(R.id.wallet_info);
 
-        // 如果已有钱包，显示信息
         WalletManager wm = WalletManager.getInstance(this);
         if (wm.hasWallet()) {
             showWalletInfo(wm.getAddress());
@@ -44,7 +40,7 @@ public class WalletActivity extends AppCompatActivity {
             wm.clearWallet();
             txtInfo.setText("未导入钱包");
             editKey.setText("");
-            Toast.makeText(this, "已清除", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "钱包已清除", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -55,40 +51,39 @@ public class WalletActivity extends AppCompatActivity {
             return;
         }
 
-        // 标准化私钥
         if (key.startsWith("0x")) key = key.substring(2);
         if (key.length() != 64) {
-            Toast.makeText(this, "私钥格式错误 (应为64位十六进制)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "私钥格式错误（应为64位十六进制）", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // TODO: 实际应通过 secp256k1 从私钥推导地址
-        // 暂时提示用户输入地址
-        Toast.makeText(this, "私钥导入功能需要集成加密库\n请使用网页版 daix.fun 连接钱包", Toast.LENGTH_LONG).show();
+        // 从私钥推导地址
+        String address = WalletManager.addressFromPrivateKey(key);
+        if (address == null) {
+            Toast.makeText(this, "私钥无效，无法推导地址", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // 临时方案：引导到网页版
-        android.content.Intent browserIntent = new android.content.Intent(
-                android.content.Intent.ACTION_VIEW,
-                android.net.Uri.parse("https://daix.fun"));
-        startActivity(browserIntent);
+        // 保存
+        WalletManager.getInstance(this).saveWallet(address, key);
+        Toast.makeText(this, "✅ 钱包已连接: " + address.substring(0, 8) + "...", Toast.LENGTH_LONG).show();
+        showWalletInfo(address);
+
+        // 返回首页
+        finish();
     }
 
     private void showWalletInfo(String address) {
-        txtInfo.setText("钱包地址: " + address.substring(0, 10) + "..." + address.substring(address.length() - 6));
+        txtInfo.setText("钱包地址:\n" + address.substring(0, 10) + "..." + address.substring(address.length() - 6));
 
-        // 查询余额
         web3.getUsdcBalance(address).thenAccept(balance -> {
             double usdc = balance.doubleValue() / 1e6;
-            runOnUiThread(() -> {
-                txtInfo.append("\nUSDC 余额: " + usdc);
-            });
+            runOnUiThread(() -> txtInfo.append("\n\nUSDC: " + String.format("%.2f", usdc)));
         });
 
         web3.getBalance(address).thenAccept(balance -> {
             double pol = balance.doubleValue() / 1e18;
-            runOnUiThread(() -> {
-                txtInfo.append("\nPOL 余额: " + String.format("%.4f", pol));
-            });
+            runOnUiThread(() -> txtInfo.append("\nPOL: " + String.format("%.4f", pol)));
         });
     }
 }

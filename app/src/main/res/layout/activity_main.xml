@@ -3,165 +3,467 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#050507">
+    android:background="@color/bg">
 
-    <!-- 顶部钱包栏 -->
+    <!-- Header -->
     <LinearLayout
-        android:id="@+id/wallet_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@color/bg2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🍚 DAIX.fun 带饭"
+                android:textSize="22sp"
+                android:textColor="@color/text"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_import_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="连接钱包"
+                android:textSize="13sp"
+                android:textColor="@color/text"
+                android:background="@drawable/btn_primary_bg"
+                android:paddingHorizontal="16dp" />
+        </LinearLayout>
+
+        <!-- Wallet Info Card -->
+        <LinearLayout
+            android:id="@+id/wallet_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/wallet_address"
+                    android:text="未连接钱包"
+                    android:textSize="14sp"
+                    android:textColor="@color/text2"
+                    android:fontFamily="monospace" />
+
+                <TextView
+                    android:id="@+id/wallet_role"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="12sp"
+                    android:textColor="@color/gold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/wallet_balance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="13sp"
+                android:textColor="@color/text3"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Stats Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView android:id="@+id/stat_apps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="20sp"
+                    android:textColor="@color/accent"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="应用"
+                    android:textSize="12sp"
+                    android:textColor="@color/text3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView android:id="@+id/stat_devs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="20sp"
+                    android:textColor="@color/accent2"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开发者"
+                    android:textSize="12sp"
+                    android:textColor="@color/text3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView android:id="@+id/stat_licenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="20sp"
+                    android:textColor="@color/gold"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="已售许可"
+                    android:textSize="12sp"
+                    android:textColor="@color/text3" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Tab Bar -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="#0A0A0F"
-        android:gravity="center_vertical"
-        android:clickable="true"
-        android:focusable="true">
+        android:background="@color/bg2"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp">
 
         <TextView
+            android:id="@+id/tab_apps"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
-            android:text="🌐 自由软件世界"
-            android:textColor="#F8F8FC"
-            android:textSize="18sp"
+            android:text="🏪 商店"
+            android:textSize="14sp"
+            android:textColor="@color/accent"
+            android:gravity="center"
+            android:background="@drawable/btn_outline_bg"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/wallet_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="未连接钱包"
-            android:textColor="#707088"
-            android:textSize="13sp"
-            android:layout_marginEnd="12dp" />
+            android:id="@+id/tab_licenses"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="🎫 我的许可"
+            android:textSize="14sp"
+            android:textColor="@color/text3"
+            android:gravity="center"
+            android:layout_marginStart="8dp" />
 
         <TextView
-            android:id="@+id/wallet_balance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#06B6D4"
-            android:textSize="13sp" />
-
-        <Button
-            android:id="@+id/btn_import_wallet"
-            android:layout_width="wrap_content"
+            android:id="@+id/tab_promoter"
+            android:layout_width="0dp"
             android:layout_height="36dp"
-            android:text="导入"
-            android:textSize="12sp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/btn_outline_bg" />
-
+            android:layout_weight="1"
+            android:text="📣 推广"
+            android:textSize="14sp"
+            android:textColor="@color/text3"
+            android:gravity="center"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
-    <!-- 统计栏 -->
-    <LinearLayout
+    <!-- Content Area -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="#0A0A0F">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/stat_apps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#8B5CF6"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="应用"
-                android:textColor="#707088"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/stat_devs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#06B6D4"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="创作者"
-                android:textColor="#707088"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/stat_licenses"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#EC4899"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="已售凭证"
-                android:textColor="#707088"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#222230" />
-
-    <!-- APP列表 -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <FrameLayout
+        <!-- App List -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_apps"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="16dp"
-                android:clipToPadding="false" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/empty_text"
-                android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_apps"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:padding="16dp"
+                    android:clipToPadding="false" />
+
+                <TextView
+                    android:id="@+id/empty_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="暂无应用"
+                    android:textSize="14sp"
+                    android:textColor="@color/text3"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginTop="40dp" />
+            </LinearLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Promoter Panel (hidden by default) -->
+        <ScrollView
+            android:id="@+id/promoter_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="加载中..."
-                android:textColor="#707088"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                android:orientation="vertical">
 
-        </FrameLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <!-- Promoter Registration -->
+                <LinearLayout
+                    android:id="@+id/promoter_register_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_bg"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📣 推广者注册"
+                        android:textSize="16sp"
+                        android:textColor="@color/text"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="注册成为推广者，分享专属链接，每笔交易获得 25% 佣金"
+                        android:textSize="13sp"
+                        android:textColor="@color/text2"
+                        android:layout_marginBottom="12dp" />
+
+                    <EditText
+                        android:id="@+id/et_promoter_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:hint="推广者名称"
+                        android:textSize="14sp"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/text3"
+                        android:background="@drawable/edit_bg"
+                        android:paddingHorizontal="12dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <EditText
+                        android:id="@+id/et_promoter_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:hint="推广码 (如 PROMO2026)"
+                        android:textSize="14sp"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/text3"
+                        android:background="@drawable/edit_bg"
+                        android:paddingHorizontal="12dp"
+                        android:layout_marginBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btn_register_promoter"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:text="注册推广者"
+                        android:textSize="14sp"
+                        android:textColor="@color/text"
+                        android:background="@drawable/btn_primary_bg" />
+                </LinearLayout>
+
+                <!-- Promoter Status -->
+                <LinearLayout
+                    android:id="@+id/promoter_status_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_bg"
+                    android:padding="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="✅ 已注册推广者"
+                        android:textSize="16sp"
+                        android:textColor="@color/green"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/promoter_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="14sp"
+                        android:textColor="@color/text"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/promoter_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="13sp"
+                        android:textColor="@color/text2"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="你的专属推广链接："
+                        android:textSize="13sp"
+                        android:textColor="@color/text3"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/promoter_link"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="12sp"
+                        android:textColor="@color/accent2"
+                        android:fontFamily="monospace"
+                        android:background="@drawable/edit_bg"
+                        android:padding="10dp"
+                        android:textIsSelectable="true"
+                        android:layout_marginBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btn_copy_link"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="📋 复制推广链接"
+                        android:textSize="13sp"
+                        android:textColor="@color/text"
+                        android:background="@drawable/btn_outline_bg" />
+                </LinearLayout>
+
+                <!-- Promoter Earnings -->
+                <LinearLayout
+                    android:id="@+id/promoter_earnings_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_bg"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💰 推广收益"
+                        android:textSize="16sp"
+                        android:textColor="@color/text"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/promoter_total_sales"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textSize="20sp"
+                                android:textColor="@color/gold"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="推广销售"
+                                android:textSize="12sp"
+                                android:textColor="@color/text3" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/promoter_total_earnings"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 USDC"
+                                android:textSize="20sp"
+                                android:textColor="@color/green"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="累计佣金"
+                                android:textSize="12sp"
+                                android:textColor="@color/text3" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
 </LinearLayout>

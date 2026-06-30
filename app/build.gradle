@@ -36,4 +36,5 @@ dependencies {
     implementation 'org.json:json:20240303'
     implementation 'com.squareup.picasso:picasso:2.8'
     implementation 'androidx.lifecycle:lifecycle-runtime:2.7.0'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 }

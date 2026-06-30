@@ -94,6 +94,8 @@ public class Web3Client {
             case "activateLicense(uint256,string)": return "0x8c9fb31a";
             case "getActiveApps()": return "0x4e53a444";
             case "getApp(uint256)": return "0x24f3a51b";
+            case "getPromoter(address)": return "0x8b8f8e1e";
+            case "register(string,string)": return "0x6e9b4f1c";
             default: return "0x00000000";
         }
     }
@@ -372,6 +374,74 @@ public class Web3Client {
                 return BigInteger.ZERO;
             }
         });
+    }
+
+    /** 检查是否已注册开发者 */
+    public CompletableFuture<Boolean> isRegisteredDeveloper(String address) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String data = selector("isRegistered(address)") + encodeAddress(address);
+                String result = ethCall(ContractConfig.DEVELOPER_REGISTRY, data);
+                return decodeBool(result);
+            } catch (Exception e) {
+                return false;
+            }
+        });
+    }
+
+    /** 检查是否已注册推广者 */
+    public CompletableFuture<Boolean> isRegisteredPromoter(String address) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String data = selector("isRegistered(address)") + encodeAddress(address);
+                String result = ethCall(ContractConfig.PROMOTER_REGISTRY, data);
+                return decodeBool(result);
+            } catch (Exception e) {
+                return false;
+            }
+        });
+    }
+
+    /** 获取推广者信息 */
+    public CompletableFuture<PromoterInfo> getPromoterInfo(String address) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                String data = selector("getPromoter(address)") + encodeAddress(address);
+                String result = ethCall(ContractConfig.PROMOTER_REGISTRY, data);
+                String hex = result.startsWith("0x") ? result.substring(2) : result;
+                if (hex.length() < 192) return null;
+                PromoterInfo info = new PromoterInfo();
+                info.name = readStringAt(hex, 0);
+                info.referralCode = readStringAt(hex, 32);
+                info.active = decodeBool(hex.substring(192, 256));
+                return info;
+            } catch (Exception e) {
+                return null;
+            }
+        });
+    }
+
+    public static class PromoterInfo {
+        public String name;
+        public String referralCode;
+        public boolean active;
+    }
+
+    /** 编码 string 参数 (ABI encoding) */
+    public static String encodeString(String str) {
+        byte[] bytes = str.getBytes();
+        String hex = bytesToHex(bytes);
+        String offset = String.format("%064x", 32);
+        String length = String.format("%064x", bytes.length);
+        String padded = hex;
+        while (padded.length() % 64 != 0) padded += "00";
+        return offset + length + padded;
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) sb.append(String.format("%02x", b & 0xFF));
+        return sb.toString();
     }
 
     /** 获取 USDC 余额 */
