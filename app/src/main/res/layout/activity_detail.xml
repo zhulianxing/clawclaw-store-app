@@ -10,7 +10,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- 顶部图标+名称 -->
+        <!-- 图标+名称 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                     android:id="@+id/detail_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="APP名称"
+                    android:text="产品名称"
                     android:textColor="#F8F8FC"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -61,7 +61,7 @@
                         android:id="@+id/detail_trial"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="试用 7 天"
+                        android:text="7天免费试用"
                         android:textColor="#F59E0B"
                         android:textSize="12sp"
                         android:background="@drawable/badge_bg"
@@ -69,13 +69,14 @@
                         android:paddingTop="4dp"
                         android:paddingRight="8dp"
                         android:paddingBottom="4dp"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/detail_version"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="版本 v1.0.0"
+                        android:text="v1.0.0"
                         android:textColor="#707088"
                         android:textSize="12sp"
                         android:background="@drawable/badge_bg"
@@ -85,7 +86,6 @@
                         android:paddingBottom="4dp" />
 
                 </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
 
@@ -93,7 +93,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="应用介绍"
+            android:text="产品介绍"
             android:textColor="#B0B0C0"
             android:textSize="14sp"
             android:layout_marginTop="24dp"
@@ -103,14 +103,14 @@
             android:id="@+id/detail_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="应用描述文本"
+            android:text="产品描述"
             android:textColor="#F8F8FC"
             android:textSize="15sp"
             android:lineSpacingExtra="4dp"
             android:background="@drawable/card_bg"
             android:padding="16dp" />
 
-        <!-- 创作者信息 -->
+        <!-- 平台/版本信息 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="创作者"
+                android:text="平台"
                 android:textColor="#707088"
                 android:textSize="13sp" />
 
@@ -132,10 +132,9 @@
                 android:id="@+id/detail_dev"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0x1Bcb...7004"
+                android:text="Android · 7.5MB"
                 android:textColor="#8B5CF6"
                 android:textSize="13sp" />
-
         </LinearLayout>
 
         <!-- 价格 -->
@@ -161,14 +160,13 @@
                 android:id="@+id/detail_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 USDC"
+                android:text="¥0"
                 android:textColor="#06B6D4"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
-        <!-- 收益分配说明 -->
+        <!-- 激活说明 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -180,7 +178,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💰 收益分配"
+                android:text="🔑 激活方式"
                 android:textColor="#B0B0C0"
                 android:textSize="13sp"
                 android:layout_marginBottom="8dp" />
@@ -188,11 +186,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="• 创作者: 60%\n• 推广者: 25%\n• 平台: 10%\n• Gas补贴: 5%"
+                android:text="• 购买后获得16位激活码\n• SHA-256 离线验证，无需联网\n• 一码一机，永久有效\n• 重装系统后激活码仍可用"
                 android:textColor="#707088"
                 android:textSize="13sp"
                 android:lineSpacingExtra="2dp" />
-
         </LinearLayout>
 
         <!-- 进度条 -->
@@ -212,7 +209,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="12dp">
 
             <Button
                 android:id="@+id/btn_download"
@@ -228,22 +225,30 @@
                 android:id="@+id/btn_purchase"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
-                android:layout_weight="2"
-                android:text="购买数字凭证"
-                android:background="@drawable/btn_primary_bg"
-                android:textColor="#FFFFFF" />
-
+                android:layout_weight="1"
+                android:text="输入激活码"
+                android:background="@drawable/btn_outline_bg"
+                android:textColor="#06B6D4"
+                android:layout_marginEnd="8dp" />
         </LinearLayout>
 
-        <!-- 链上信息 -->
+        <!-- 网页购买 -->
+        <Button
+            android:id="@+id/btn_buy_web"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="在线购买激活码 →"
+            android:background="@drawable/btn_primary_bg"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="24dp" />
+
+        <!-- 页脚 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🔗 购买后获得 ERC-721 NFT 激活码\n📋 基于 Polygon 区块链\n💎 USDC 支付，即时结算"
+            android:text="ClawClaw.tech · 端侧视觉智能平台"
             android:textColor="#707088"
             android:textSize="12sp"
-            android:lineSpacingExtra="4dp"
             android:gravity="center" />
-
     </LinearLayout>
 </ScrollView>

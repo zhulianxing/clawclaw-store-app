@@ -1,4 +1,4 @@
-package com.convnet.store;
+package com.clawclaw.store;
 
 import android.app.Application;
 

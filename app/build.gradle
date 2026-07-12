@@ -3,23 +3,23 @@ plugins {
 }
 
 android {
-    namespace 'com.convnet.store'
+    namespace 'com.clawclaw.store'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.convnet.store"
+        applicationId "com.clawclaw.store"
         minSdk 26
         targetSdk 35
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "2.0.0"
     }
 
     signingConfigs {
         release {
-            storeFile file('daix-release.keystore')
-            storePassword 'daix2026'
-            keyAlias 'daix'
-            keyPassword 'daix2026'
+            storeFile file('clawclaw-release.keystore')
+            storePassword 'clawclaw2026'
+            keyAlias 'clawclaw'
+            keyPassword 'clawclaw2026'
         }
     }
 
@@ -44,7 +44,4 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'org.json:json:20240303'
-    implementation 'com.squareup.picasso:picasso:2.8'
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.7.0'
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 }

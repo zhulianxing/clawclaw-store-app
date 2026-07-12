@@ -1,4 +1,4 @@
-package com.convnet.store;
+package com.clawclaw.store;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,13 +64,20 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> {
         }
 
         void bind(AppInfo app, OnAppClickListener listener) {
-            icon.setText(app.getIcon());
-            name.setText(app.getLocalName());
-            pkg.setText(app.packageName);
-            desc.setText(app.getLocalDesc());
+            icon.setText(app.icon_emoji != null ? app.icon_emoji : "📦");
+            name.setText(app.name_cn != null ? app.name_cn : app.name);
+            pkg.setText(app.package_name);
+            desc.setText(app.description != null ? app.description : "");
             price.setText(app.getPriceDisplay());
-            dev.setText("创作者: " + app.getShortDeveloper());
-            badge.setText("🟢 链上");
+            dev.setText(app.platform + " · " + (app.apk_size != null ? app.apk_size : "-"));
+
+            String trial = app.getTrialText();
+            if (trial != null && !trial.isEmpty()) {
+                badge.setText("🕐 " + trial);
+                badge.setVisibility(View.VISIBLE);
+            } else {
+                badge.setVisibility(View.GONE);
+            }
 
             container.setOnClickListener(v -> {
                 if (listener != null) listener.onAppClick(app);
