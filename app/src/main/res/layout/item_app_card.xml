@@ -3,104 +3,130 @@
     android:id="@+id/app_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="16dp"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginHorizontal="4dp"
     android:background="@drawable/card_bg"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
-    <!-- 图标 -->
-    <TextView
-        android:id="@+id/app_icon"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:text="📦"
-        android:textSize="32sp"
-        android:gravity="center"
-        android:background="@drawable/icon_bg"
-        android:layout_marginEnd="16dp" />
-
-    <!-- 信息 -->
+    <!-- ========== 上半：图标 + 名称 + 价格 ========== -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
+        <!-- 图标 -->
+        <TextView
+            android:id="@+id/app_icon"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:text="📦"
+            android:textSize="28sp"
+            android:gravity="center"
+            android:background="@drawable/icon_bg"
+            android:layout_marginEnd="14dp" />
+
+        <!-- 名称 + 包名 -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/app_name"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="APP名称"
-                android:textColor="#F8F8FC"
+                android:text="产品名称"
+                android:textColor="@color/text"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="3dp">
+
+                <TextView
+                    android:id="@+id/app_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7天试用"
+                    android:textColor="@color/green"
+                    android:textSize="11sp"
+                    android:background="@drawable/trial_badge_bg"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp" />
+
+                <TextView
+                    android:id="@+id/app_dev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Android · 7.5MB"
+                    android:textColor="@color/text3"
+                    android:textSize="11sp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 价格 + 获取按钮 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/app_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¥198"
+                android:textColor="@color/accent2"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/app_badge"
+                android:id="@+id/btn_get"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🟢 链上"
-                android:textColor="#10B981"
-                android:textSize="11sp" />
-
+                android:text="获取 →"
+                android:textColor="@color/accent2"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/btn_get_bg"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/app_pkg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="com.example.app"
-            android:textColor="#707088"
-            android:textSize="12sp"
-            android:layout_marginTop="2dp" />
-
-        <TextView
-            android:id="@+id/app_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="应用描述"
-            android:textColor="#B0B0C0"
-            android:textSize="13sp"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_marginTop="6dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="8dp">
-
-            <TextView
-                android:id="@+id/app_price"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="0 USDC"
-                android:textColor="#06B6D4"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/app_dev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="创作者: 0x1Bcb...7004"
-                android:textColor="#707088"
-                android:textSize="11sp" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
+    <!-- ========== 描述 ========== -->
+    <TextView
+        android:id="@+id/app_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="应用描述"
+        android:textColor="@color/text2"
+        android:textSize="13sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="66dp" />
+
+    <!-- 隐藏包名（保留ID防止适配器崩溃） -->
+    <TextView
+        android:id="@+id/app_pkg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text=""
+        android:visibility="gone" />
 </LinearLayout>

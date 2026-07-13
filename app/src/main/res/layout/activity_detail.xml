@@ -2,30 +2,32 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#050507">
+    android:background="@color/bg"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:orientation="vertical">
 
-        <!-- 图标+名称 -->
+        <!-- ========== 顶部图标区 ========== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:padding="24dp"
+            android:background="@color/bg2">
 
             <TextView
                 android:id="@+id/detail_icon"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:text="📦"
-                android:textSize="48sp"
+                android:textSize="40sp"
                 android:gravity="center"
                 android:background="@drawable/icon_bg"
-                android:layout_marginEnd="20dp" />
+                android:layout_marginEnd="18dp" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -35,20 +37,22 @@
 
                 <TextView
                     android:id="@+id/detail_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="产品名称"
-                    android:textColor="#F8F8FC"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/text"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
 
                 <TextView
                     android:id="@+id/detail_pkg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="com.example.app"
-                    android:textColor="#707088"
-                    android:textSize="13sp"
+                    android:textColor="@color/text3"
+                    android:textSize="12sp"
                     android:layout_marginTop="4dp" />
 
                 <LinearLayout
@@ -62,13 +66,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="7天免费试用"
-                        android:textColor="#F59E0B"
-                        android:textSize="12sp"
-                        android:background="@drawable/badge_bg"
-                        android:paddingLeft="8dp"
-                        android:paddingTop="4dp"
-                        android:paddingRight="8dp"
-                        android:paddingBottom="4dp"
+                        android:textColor="@color/green"
+                        android:textSize="11sp"
+                        android:background="@drawable/trial_badge_bg"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="3dp"
                         android:layout_marginEnd="8dp"
                         android:visibility="gone" />
 
@@ -77,178 +79,234 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="v1.0.0"
-                        android:textColor="#707088"
-                        android:textSize="12sp"
+                        android:textColor="@color/text3"
+                        android:textSize="11sp"
                         android:background="@drawable/badge_bg"
-                        android:paddingLeft="8dp"
-                        android:paddingTop="4dp"
-                        android:paddingRight="8dp"
-                        android:paddingBottom="4dp" />
-
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="3dp" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <!-- 价格 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/detail_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¥0"
+                    android:textColor="@color/accent2"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="永久激活"
+                    android:textColor="@color/text3"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 描述 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="产品介绍"
-            android:textColor="#B0B0C0"
-            android:textSize="14sp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/detail_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="产品描述"
-            android:textColor="#F8F8FC"
-            android:textSize="15sp"
-            android:lineSpacingExtra="4dp"
-            android:background="@drawable/card_bg"
-            android:padding="16dp" />
-
-        <!-- 平台/版本信息 -->
+        <!-- ========== 操作按钮区 ========== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/card_bg"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="平台"
-                android:textColor="#707088"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/detail_dev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Android · 7.5MB"
-                android:textColor="#8B5CF6"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <!-- 价格 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/card_bg"
-            android:padding="20dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="永久激活码"
-                android:textColor="#F8F8FC"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/detail_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="¥0"
-                android:textColor="#06B6D4"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- 激活说明 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/card_bg"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔑 激活方式"
-                android:textColor="#B0B0C0"
-                android:textSize="13sp"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="• 购买后获得16位激活码\n• SHA-256 离线验证，无需联网\n• 一码一机，永久有效\n• 重装系统后激活码仍可用"
-                android:textColor="#707088"
-                android:textSize="13sp"
-                android:lineSpacingExtra="2dp" />
-        </LinearLayout>
-
-        <!-- 进度条 -->
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:visibility="gone"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="100" />
-
-        <!-- 操作按钮 -->
-        <LinearLayout
-            android:id="@+id/purchase_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="12dp">
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            android:background="@color/bg2">
 
             <Button
                 android:id="@+id/btn_download"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="44dp"
                 android:layout_weight="1"
-                android:text="下载试用"
+                android:text="⬇ 下载试用"
                 android:background="@drawable/btn_outline_bg"
-                android:textColor="#F8F8FC"
+                android:textColor="@color/text"
+                android:textSize="14sp"
                 android:layout_marginEnd="8dp" />
 
             <Button
                 android:id="@+id/btn_purchase"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="44dp"
                 android:layout_weight="1"
-                android:text="输入激活码"
+                android:text="🔑 输入激活码"
                 android:background="@drawable/btn_outline_bg"
-                android:textColor="#06B6D4"
-                android:layout_marginEnd="8dp" />
+                android:textColor="@color/accent2"
+                android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- 网页购买 -->
-        <Button
-            android:id="@+id/btn_buy_web"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="在线购买激活码 →"
-            android:background="@drawable/btn_primary_bg"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="24dp" />
+            android:layout_height="1dp"
+            android:background="#1A1A2E" />
 
-        <!-- 页脚 -->
-        <TextView
+        <!-- ========== 产品介绍 ========== -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ClawClaw.tech · 端侧视觉智能平台"
-            android:textColor="#707088"
-            android:textSize="12sp"
-            android:gravity="center" />
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="产品介绍"
+                android:textColor="@color/text"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:id="@+id/detail_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="产品描述"
+                android:textColor="@color/text2"
+                android:textSize="14sp"
+                android:lineSpacingExtra="5dp" />
+
+            <!-- 平台/大小信息 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/card_bg"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="平台"
+                        android:textColor="@color/text3"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/detail_dev"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Android · 7.5MB"
+                        android:textColor="@color/text"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="32dp"
+                    android:background="#1A1A2E"
+                    android:layout_marginHorizontal="16dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="激活方式"
+                        android:textColor="@color/text3"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SHA-256 离线验证"
+                        android:textColor="@color/text"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ========== 激活说明 ========== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔑 激活说明"
+                android:textColor="@color/text"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/card_bg"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="• 购买后获得16位激活码\n• SHA-256 离线验证，无需联网\n• 一码一机，永久有效\n• 重装系统后激活码仍可用"
+                    android:textColor="@color/text2"
+                    android:textSize="13sp"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ========== 进度条 ========== -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100" />
+
+        <!-- ========== 在线购买按钮 ========== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="32dp">
+
+            <Button
+                android:id="@+id/btn_buy_web"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="在线购买激活码 →"
+                android:background="@drawable/btn_primary_bg"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ClawClaw.tech · 端侧视觉智能平台"
+                android:textColor="@color/text3"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:layout_marginTop="20dp" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

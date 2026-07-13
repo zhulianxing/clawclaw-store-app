@@ -48,7 +48,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> {
     }
 
     static class AppViewHolder extends RecyclerView.ViewHolder {
-        TextView icon, name, pkg, desc, price, dev, badge;
+        TextView icon, name, pkg, desc, price, dev, badge, btnGet;
         LinearLayout container;
 
         AppViewHolder(@NonNull View itemView) {
@@ -60,24 +60,38 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> {
             price = itemView.findViewById(R.id.app_price);
             dev = itemView.findViewById(R.id.app_dev);
             badge = itemView.findViewById(R.id.app_badge);
+            btnGet = itemView.findViewById(R.id.btn_get);
             container = itemView.findViewById(R.id.app_container);
         }
 
         void bind(AppInfo app, OnAppClickListener listener) {
             icon.setText(app.icon_emoji != null ? app.icon_emoji : "📦");
             name.setText(app.name_cn != null ? app.name_cn : app.name);
-            pkg.setText(app.package_name);
-            desc.setText(app.description != null ? app.description : "");
-            price.setText(app.getPriceDisplay());
-            dev.setText(app.platform + " · " + (app.apk_size != null ? app.apk_size : "-"));
 
+            // 描述
+            String descText = app.description != null ? app.description : "";
+            desc.setText(descText);
+            desc.setVisibility(descText.isEmpty() ? View.GONE : View.VISIBLE);
+
+            // 价格
+            price.setText(app.getPriceDisplay());
+
+            // 平台+大小
+            String sizeText = app.apk_size != null ? app.apk_size : "--";
+            String platformText = app.platform != null ? app.platform : "Android";
+            dev.setText(platformText + " · " + sizeText);
+
+            // 试用 badge
             String trial = app.getTrialText();
             if (trial != null && !trial.isEmpty()) {
-                badge.setText("🕐 " + trial);
+                badge.setText(trial);
                 badge.setVisibility(View.VISIBLE);
             } else {
                 badge.setVisibility(View.GONE);
             }
+
+            // 包名隐藏（保留 binding 不崩）
+            pkg.setText(app.package_name);
 
             container.setOnClickListener(v -> {
                 if (listener != null) listener.onAppClick(app);
