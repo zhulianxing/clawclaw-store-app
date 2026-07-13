@@ -183,12 +183,10 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
     }
 
     private boolean matchesCategory(AppInfo app, String category) {
-        String pkg = app.package_name != null ? app.package_name : "";
         String name = app.name_cn != null ? app.name_cn : "";
         switch (category) {
             case "安防监控":
-                return pkg.contains("guard") || pkg.contains("loss") || pkg.contains("detect") 
-                    || name.contains("防损") || name.contains("守护") || name.contains("抓拍") || name.contains("跌倒");
+                return name.contains("防损") || name.contains("守护") || name.contains("抓拍") || name.contains("跌倒");
             case "迎宾考勤":
                 return name.contains("迎宾") || name.contains("考勤") || name.contains("客流");
             case "生活工具":
