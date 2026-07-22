@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -218,42 +217,40 @@ public class AppDetailActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                OkHttpClient client = new OkHttpClient();
                 Request req = new Request.Builder().url(apkUrl).build();
-                Response res = client.newCall(req).execute();
-
-                if (!res.isSuccessful()) {
-                    throw new Exception("HTTP " + res.code());
-                }
-
-                String fileName = pkgName + ".apk";
-                File dir = new File(getCacheDir(), "downloads");
-                if (!dir.exists()) dir.mkdirs();
-                File apkFile = new File(dir, fileName);
-
-                InputStream is = res.body().byteStream();
-                FileOutputStream fos = new FileOutputStream(apkFile);
-                byte[] buf = new byte[8192];
-                int len;
-                long total = res.body().contentLength();
-                long downloaded = 0;
-                while ((len = is.read(buf)) != -1) {
-                    fos.write(buf, 0, len);
-                    downloaded += len;
-                    if (total > 0) {
-                        int pct = (int) (downloaded * 100 / total);
-                        runOnUiThread(() -> progressBar.setProgress(pct));
+                try (Response res = ApiClient.getSharedClient().newCall(req).execute()) {
+                    if (!res.isSuccessful()) {
+                        throw new Exception("HTTP " + res.code());
                     }
-                }
-                fos.close();
-                is.close();
 
-                runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    btnDownload.setEnabled(true);
-                    btnDownload.setText("安装");
-                    installApk(apkFile);
-                });
+                    String fileName = pkgName + ".apk";
+                    File dir = new File(getCacheDir(), "downloads");
+                    if (!dir.exists()) dir.mkdirs();
+                    File apkFile = new File(dir, fileName);
+
+                    try (InputStream is = res.body().byteStream();
+                         FileOutputStream fos = new FileOutputStream(apkFile)) {
+                        byte[] buf = new byte[8192];
+                        int len;
+                        long total = res.body().contentLength();
+                        long downloaded = 0;
+                        while ((len = is.read(buf)) != -1) {
+                            fos.write(buf, 0, len);
+                            downloaded += len;
+                            if (total > 0) {
+                                int pct = (int) (downloaded * 100 / total);
+                                runOnUiThread(() -> progressBar.setProgress(pct));
+                            }
+                        }
+                    }
+
+                    runOnUiThread(() -> {
+                        progressBar.setVisibility(View.GONE);
+                        btnDownload.setEnabled(true);
+                        btnDownload.setText("安装");
+                        installApk(apkFile);
+                    });
+                }
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     progressBar.setVisibility(View.GONE);

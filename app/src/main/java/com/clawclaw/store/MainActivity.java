@@ -58,9 +58,11 @@ public class MainActivity extends AppCompatActivity implements AppAdapter.OnAppC
         categoryTabs = findViewById(R.id.category_tabs);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_apps);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        adapter = new AppAdapter(this);
-        recyclerView.setAdapter(adapter);
+        if (recyclerView != null) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+            adapter = new AppAdapter(this);
+            recyclerView.setAdapter(adapter);
+        }
 
         // 搜索
         searchInput.addTextChangedListener(new TextWatcher() {

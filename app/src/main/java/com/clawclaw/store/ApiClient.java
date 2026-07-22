@@ -19,19 +19,18 @@ import okhttp3.Response;
  */
 public class ApiClient {
 
-    private static final String BASE_URL = "https://clawclaw.tech";
+    private static final String BASE_URL = BuildConfig.API_BASE_URL;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private static OkHttpClient client;
+    private static final OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .build();
 
-    public ApiClient() {
-        if (client == null) {
-            client = new OkHttpClient.Builder()
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(20, TimeUnit.SECONDS)
-                    .retryOnConnectionFailure(true)
-                    .build();
-        }
+    /** Expose the shared client for direct use (e.g. file downloads) */
+    public static OkHttpClient getSharedClient() {
+        return client;
     }
 
     // ===== 基础请求 =====
